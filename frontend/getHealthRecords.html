@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Health Records Dashboard</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Add custom CSS styling here */
+        body {
+            background-image: url('https://img.freepik.com/free-vector/clean-medical-background_53876-97927.jpg?w=1060&t=st=1691340995~exp=1691341595~hmac=1b976a953fdb6d52388199045080d7c7f78a5c0acd8b760b85bd82f0d82c0075');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+        .navbar {
+            background-color: #486076;
+            padding: 10px;
+        }
+        .navbar .navbar-brand {
+            font-weight: bold;
+            color: #fff;
+        }
+        .navbar .nav-link {
+            font-weight: bold;
+            color: #fff;
+        }
+        .navbar .nav-item {
+            margin-right: 15px;
+        }
+        .navbar .nav-link:hover {
+            color: #000;
+        }
+        .navbar .nav-link.active {
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">Health App</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="./createHealthRecord">Create Health record</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./getHealthRecords">Display health records</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./takeAppointment">To take appointment</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./signup">Create Account</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./signin">Signin to account</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="signoutLink">Signout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <script>
+        document.getElementById("signoutLink").addEventListener("click", function () {
+            // Clear CSRF token from localStorage
+            window.localStorage.setItem("CSRF", "");
+
+            // Redirect to the sign-in page
+            window.location.href = "./signin";
+        });
+    </script>
+
+    <div class="container mt-5">
+        <h2 class="mb-4">Health Records Dashboard</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Height (cm)</th>
+                    <th>Weight (kg)</th>
+                    <th>Blood Pressure</th>
+                    <th>Sugar Level</th>
+                    <th>Body Temperature (°C)</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody id="healthRecordsBody">
+                <!-- Health records will be dynamically populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Include Bootstrap JS (optional if you don't need any JavaScript features from Bootstrap) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            if(!window.localStorage.CSRF){
+                window.location.href = "./signin";
+            }
+
+            // Function to fetch health records data and populate the dashboard
+            function fetchHealthRecords() {
+                $.ajax({
+                    url: "/getfit/api/v1/healthTrackRecords",
+                    type: "GET",
+                    headers: {
+                        "x-access-token": window.localStorage.CSRF
+                    },
+                    success: function (data) {
+                        // Assuming the server returns an array of health records objects
+                        const healthRecords = data;
+
+                        // Clear the existing table rows
+                        $("#healthRecordsBody").empty();
+
+                        // Loop through the health records and append rows to the table
+                        healthRecords.forEach((record) => {
+                            const row = `<tr>
+                                            <td>${record.height}</td>
+                                            <td>${record.weight}</td>
+                                            <td>${record.bloodPressure}</td>
+                                            <td>${record.sugerLevel}</td>
+                                            <td>${record.bodyTemperature}</td>
+                                            <td>${new Date(record.createdAt)}</td>
+                                        </tr>`;
+                            $("#healthRecordsBody").append(row);
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Error fetching health records. Please try again.");
+                        // Handle error if needed.
+                    }
+                });
+            }
+
+            // Fetch and display health records when the page loads
+            fetchHealthRecords();
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

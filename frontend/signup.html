@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Signup Form</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Add custom CSS styling here */
+        body {
+            background-image: url('https://img.freepik.com/free-vector/clean-medical-background_53876-97927.jpg?w=1060&t=st=1691340995~exp=1691341595~hmac=1b976a953fdb6d52388199045080d7c7f78a5c0acd8b760b85bd82f0d82c0075');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+        .form-container {
+            background-color: #fff;
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+
+        .form-container h2 {
+            text-align: center;
+        }
+
+        .form-control {
+            border: 2px solid #6b816e; /* Change the border thickness here */
+        }
+
+        .navbar {
+            background-color: #486076;
+            padding: 10px;
+        }
+
+        .navbar .navbar-brand {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .navbar .nav-link {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .navbar .nav-item {
+            margin-right: 15px;
+        }
+
+        .navbar .nav-link:hover {
+            color: #000;
+        }
+
+        .navbar .nav-link.active {
+            color: #e74c3c;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">Health App</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="./createHealthRecord">Create Health record</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./getHealthRecords">Display health records</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./takeAppointment">To take appointment</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./signup">Create Account</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./signin">Signin to account</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="signoutLink">Signout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <script>
+        document.getElementById("signoutLink").addEventListener("click", function () {
+            // Clear CSRF token from localStorage
+            window.localStorage.setItem("CSRF", "");
+
+            // Redirect to the sign-in page
+            window.location.href = "./signin";
+        });
+    </script>
+
+    <div class="container mt-5">
+        <div class="form-container">
+            <h2 class="mb-4">Signup Form</h2>
+            <form id="signupForm">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name:</label>
+                    <input type="text" id="name" name="name" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="userId" class="form-label">UserId:</label>
+                    <input type="text" id="userId" name="userId" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password:</label>
+                    <input type="password" id="password" name="password" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email:</label>
+                    <input type="email" id="email" name="email" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label">Address:</label>
+                    <textarea id="address" name="address" class="form-control" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="userType" class="form-label">User Type:</label>
+                    <select id="userType" name="userType" class="form-select" required>
+                        <option value="">Select User Type</option>
+                        <option value="DOCTOR">Doctor</option>
+                        <option value="PATIENT">Patient</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <input type="submit" value="Submit" class="btn btn-primary">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Include Bootstrap JS (optional if you don't need any JavaScript features from Bootstrap) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#signupForm").submit(function (event) {
+                event.preventDefault();
+                const form = $(this);
+                const formData = form.serializeArray();
+
+                // Client-side validation before submitting the form
+                const nameRegex = /^[^0-9]+$/;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                let validationError = false;
+                let jsonBody = {};
+                formData.forEach((field) => {
+                    switch (field.name) {
+                        case "name":
+                            if (!nameRegex.test(field.value)) {
+                                alert("Name should not contain numbers.");
+                                validationError = true;
+                            }
+                            break;
+                        case "email":
+                            if (!emailRegex.test(field.value)) {
+                                alert("Please enter a valid email address.");
+                                validationError = true;
+                            }
+                            break;
+                        // Add additional validation rules here if needed.
+                    }
+                    if (field.name)
+                        jsonBody[field.name] = field.value || '';
+                });
+
+                if (!validationError && jsonBody) {
+                    // If validation passes, make a POST call to the endpoint.
+                    $.ajax({
+                        url: "./api/v1/auth/signup",
+                        type: "POST",
+                        data: JSON.stringify(jsonBody),
+                        contentType: "application/json",
+                        success: function (response) {
+                            alert("Signup successful!");
+                            // You can perform further actions here after successful signup.
+                        },
+                        error: function (xhr, status, error) {
+                            alert("Error during signup. Please try again.");
+                            // Handle error if needed.
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

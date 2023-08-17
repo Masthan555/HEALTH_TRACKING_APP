@@ -101,7 +101,7 @@ Sample request body :
 	"weight": "50",
 	"bloodPressure": "120/80",
 	"sugerLevel": "140",
-	"bodyTemparature":"98.6°F"
+	"bodyTemperature":"98.6°F"
 }
 
 Sample response body :
@@ -130,7 +130,7 @@ Sample request body :
 	"weight": "50",
 	"bloodPressure": "120/80",
 	"sugerLevel": "140",
-	"bodyTemparature":"98.6°F"
+	"bodyTemperature":"98.6°F"
 }
 
 Sample response body :
@@ -140,7 +140,7 @@ Sample response body :
 	"weight": "50",
 	"bloodPressure": "120/80",
 	"sugerLevel": "140",
-	"bodyTemparature": "98.6°F",
+	"bodyTemperature": "98.6°F",
 	"userId": "masthan1",
 	"createdAt": "2022-05-17T17:37:24.260Z",
 	"updatedAt": "2022-05-17T17:37:24.260Z",
@@ -161,7 +161,7 @@ Sample response body :
 		"weight": "50",
 		"bloodPressure": "120/80",
 		"sugerLevel": "140",
-		"bodyTemparature": "98.6°F",
+		"bodyTemperature": "98.6°F",
 		"userId": "masthan2",
 		"createdAt": "2022-05-17T18:38:49.603Z",
 		"updatedAt": "2022-05-17T18:38:49.603Z",

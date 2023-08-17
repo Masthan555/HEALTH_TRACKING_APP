@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Appointment Dashboard</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('https://img.freepik.com/free-vector/clean-medical-background_53876-97927.jpg?w=1060&t=st=1691340995~exp=1691341595~hmac=1b976a953fdb6d52388199045080d7c7f78a5c0acd8b760b85bd82f0d82c0075');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+        /* Add custom CSS styling here */
+        .dashboard-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+        .dashboard-container h2 {
+            text-align: center;
+        }
+        .appointment-item {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .appointment-status {
+            font-weight: bold;
+        }
+        body {
+            background-image: url('https://img.freepik.com/free-vector/clean-medical-background_53876-97927.jpg?w=1060&t=st=1691340995~exp=1691341595~hmac=1b976a953fdb6d52388199045080d7c7f78a5c0acd8b760b85bd82f0d82c0075');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+    <style>
+        /* Add custom CSS styling here */
+        .navbar {
+            background-color: #486076;
+            padding: 10px;
+        }
+        .navbar .navbar-brand {
+            font-weight: bold;
+            color: #fff;
+        }
+        .navbar .nav-link {
+            font-weight: bold;
+            color: #fff;
+        }
+        .navbar .nav-item {
+            margin-right: 15px;
+        }
+        .navbar .nav-link:hover {
+            color: #000;
+        }
+        .navbar .nav-link.active {
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">Health App</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="./createHealthRecord">Create Health record</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./getHealthRecords">Display health records</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./takeAppointment">To take appointment</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./signup">Create Account</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./signin">Signin to account</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="signoutLink">Signout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <script>
+        document.getElementById("signoutLink").addEventListener("click", function () {
+            // Clear CSRF token from localStorage
+            window.localStorage.setItem("CSRF", "");
+
+            // Redirect to the sign-in page
+            window.location.href = "./signin";
+        });
+    </script>
+
+    <div class="container mt-5">
+        <div class="dashboard-container">
+            <h2>Appointment Dashboard</h2>
+            <div id="appointmentList"></div>
+        </div>
+    </div>
+
+    <!-- Include Bootstrap JS (optional if you don't need any JavaScript features from Bootstrap) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Function to fetch appointment data from the backend
+            function fetchAppointments() {
+                $.ajax({
+                    url: "/getfit/api/v1/appointments",
+                    type: "GET",
+                    success: function (data) {
+                        displayAppointments(data);
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Error fetching appointments. Please try again.");
+                    }
+                });
+            }
+
+            // Function to display appointments in the dashboard
+            function displayAppointments(appointments) {
+                const appointmentList = $("#appointmentList");
+                appointmentList.empty();
+                if (appointments.length === 0) {
+                    appointmentList.append("<p>No appointments found.</p>");
+                    return;
+                }
+                appointments.forEach(appointment => {
+                    const status = appointment.status;
+                    const statusClass = status === "Confirmed" ? "text-success" : "text-danger";
+                    const appointmentItem = `
+                        <div class="appointment-item">
+                            <p><strong>Hospital:</strong> ${appointment.hospital}</p>
+                            <p><strong>Doctor:</strong> ${appointment.doctor}</p>
+                            <p><strong>Date & Time:</strong> ${appointment.appointmentDate}</p>
+                            <p><strong>Amount:</strong> ${appointment.amount}</p>
+                            <p><strong>Identified Symptoms:</strong> ${appointment.identifiedSymptoms.join(", ")}</p>
+                            <p><strong>Status:</strong> <span class="appointment-status ${statusClass}">${status}</span></p>
+                        </div>
+                    `;
+                    appointmentList.append(appointmentItem);
+                });
+            }
+
+            // Fetch appointments on page load
+            fetchAppointments();
+        });
+    </script>
+</body>
+</html>

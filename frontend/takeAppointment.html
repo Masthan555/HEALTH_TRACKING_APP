@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Take Appointment</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Add custom CSS styling here */
+        body {
+            background-image: url('https://img.freepik.com/free-vector/clean-medical-background_53876-97927.jpg?w=1060&t=st=1691340995~exp=1691341595~hmac=1b976a953fdb6d52388199045080d7c7f78a5c0acd8b760b85bd82f0d82c0075');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+        .form-container {
+            background-color: #fff;
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+
+        .form-container h2 {
+            text-align: center;
+        }
+
+        .form-control {
+            border: 2px solid #6b816e; /* Change the border thickness here */
+        }
+
+        .badge {
+            margin-right: 5px;
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+        }
+    </style>
+    <style>
+        /* Add custom CSS styling here */
+        .navbar {
+            background-color: #486076;
+            padding: 10px;
+        }
+        .navbar .navbar-brand {
+            font-weight: bold;
+            color: #fff;
+        }
+        .navbar .nav-link {
+            font-weight: bold;
+            color: #fff;
+        }
+        .navbar .nav-item {
+            margin-right: 15px;
+        }
+        .navbar .nav-link:hover {
+            color: #000;
+        }
+        .navbar .nav-link.active {
+            color: #e74c3c;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">Health App</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="./createHealthRecord">Create Health record</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./getHealthRecords">Display health records</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./takeAppointment">To take appointment</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./signup">Create Account</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="./signin">Signin to account</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="signoutLink">Signout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <script>
+        document.getElementById("signoutLink").addEventListener("click", function () {
+            // Clear CSRF token from localStorage
+            window.localStorage.setItem("CSRF", "");
+
+            // Redirect to the sign-in page
+            window.location.href = "./signin";
+        });
+    </script>
+
+    <div class="container mt-5">
+        <div class="form-container">
+            <h2>Take Appointment</h2>
+            <form id="appointmentForm">
+                <div class="mb-3">
+                    <label for="hospital" class="form-label">Hospital:</label>
+                    <select id="hospital" name="hospital" class="form-select" required>
+                        <option value="">Select Hospital</option>
+                        <!-- Options will be dynamically populated using JavaScript -->
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="doctor" class="form-label">Doctor:</label>
+                    <select id="doctor" name="doctor" class="form-select" required>
+                        <option value="">Select Doctor</option>
+                        <!-- Options will be dynamically populated using JavaScript -->
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="appointmentDate" class="form-label">Date & Time of Appointment:</label>
+                    <input type="datetime-local" id="appointmentDate" name="appointmentDate" class="form-control"
+                        required>
+                </div>
+                <div class="mb-3">
+                    <label for="amount" class="form-label">Amount:</label>
+                    <input type="number" id="amount" name="amount" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="identifiedSymptoms" class="form-label">Identified Symptoms:</label>
+                    <input type="text" id="identifiedSymptomsInput" class="form-control"
+                        placeholder="Type and press Enter">
+                </div>
+                <div class="mb-3" id="selectedSymptomsContainer">
+                    <!-- Selected symptoms will be displayed here as badges -->
+                </div>
+                <div class="mb-3">
+                    <input type="submit" value="Submit" class="btn btn-primary">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Include Bootstrap JS (optional if you don't need any JavaScript features from Bootstrap) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            const selectedSymptoms = new Set();
+
+            if(!window.localStorage.CSRF){
+                window.location.href = "./signin";
+            }
+
+            function addSymptomBadge(symptom) {
+                const badge = `<span class="badge bg-primary">${symptom} <i class="fas fa-times-circle" data-symptom="${symptom}"></i></span>`;
+                $("#selectedSymptomsContainer").append(badge);
+            }
+
+            function removeSymptomBadge(symptom) {
+                $(`[data-symptom="${symptom}"]`).closest(".badge").remove();
+            }
+
+            function getAllVisibleBadges() {
+                const badges = [];
+                $("#selectedSymptomsContainer .badge").each(function () {
+                    badges.push($(this).text().trim());
+                });
+                return badges;
+            }
+
+            $("#identifiedSymptomsInput").on("keypress", function (event) {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    const symptom = $(this).val().trim();
+                    if (symptom !== "") {
+                        selectedSymptoms.add(symptom);
+                        addSymptomBadge(symptom);
+                        $(this).val("");
+                    }
+                }
+            });
+
+            $("#selectedSymptomsContainer").on("click", ".fa-times-circle", function () {
+                const symptom = $(this).data("symptom");
+                selectedSymptoms.delete(symptom);
+                removeSymptomBadge(symptom);
+            });
+
+            // Function to fetch hospitals and populate the hospital dropdown
+            function fetchHospitals() {
+                $.ajax({
+                    url: "./api/v1/hospitals",
+                    type: "GET",
+                    success: function (data) {
+                        // Use a Set to remove duplicates
+                        const uniqueHospitals = new Set(data.map(hospital => hospital.name));
+
+                        const hospitalDropdown = $("#hospital");
+                        hospitalDropdown.empty();
+                        hospitalDropdown.append('<option value="">Select Hospital</option>');
+                        uniqueHospitals.forEach(hospitalName => {
+                            hospitalDropdown.append(`<option value="${getHospitalIdByName(hospitalName, data)}">${hospitalName}</option>`);
+                        });
+                    }
+                });
+            }
+
+            // Function to get the hospital id based on the hospital name
+            function getHospitalIdByName(hospitalName, hospitals) {
+                const hospital = hospitals.find(hospital => hospital.name === hospitalName);
+                return hospital ? hospital._id : "";
+            }
+
+            // Function to fetch doctors based on selected hospital and populate the doctor dropdown
+            function fetchDoctorsByHospital(hospitalId) {
+                $.ajax({
+                    url: `./api/v1/doctors?hospitalId=${hospitalId}`,
+                    type: "GET",
+                    success: function (data) {
+                        // Use a Set to remove duplicates
+                        // const uniqueDoctors = new Set(data.map(doctor => doctor.name));
+
+                        const doctorDropdown = $("#doctor");
+                        doctorDropdown.empty();
+                        doctorDropdown.append('<option value="">Select Doctor</option>');
+                        data.forEach((doctor) => {
+                            doctorDropdown.append(`<option value="${doctor._id}">${doctor.name}</option>`);
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Error fetching doctors. Please try again.");
+                    }
+                });
+            }
+
+            // Fetch hospitals on page load
+            fetchHospitals();
+
+            // Handle hospital selection event
+            $("#hospital").change(function () {
+                const selectedHospitalId = $(this).val();
+                if (selectedHospitalId) {
+                    fetchDoctorsByHospital(selectedHospitalId);
+                } else {
+                    $("#doctor").empty().append('<option value="">Select Doctor</option>');
+                }
+            });
+
+            // Handle form submission
+            $("#appointmentForm").submit(function (event) {
+                event.preventDefault();
+                const form = $(this);
+                const formData = form.serialize();
+                const jsonBody = {};
+
+                // Client-side validation before submitting the form
+                const selectedDate = new Date($("#appointmentDate").val());
+                const currentDate = new Date();
+
+                let validationError = false;
+                if ($("#hospital").val().trim() === "") {
+                    alert("Please select a hospital.");
+                    validationError = true;
+                }
+                if ($("#doctor").val().trim() === "") {
+                    alert("Please select a doctor.");
+                    validationError = true;
+                }
+                if (selectedDate <= currentDate) {
+                    alert("Please select a future date and time for the appointment.");
+                    validationError = true;
+                }
+                if (isNaN($("#amount").val()) || Number($("#amount").val()) <= 0) {
+                    alert("Please enter a valid amount.");
+                    validationError = true;
+                }
+
+                jsonBody.hospitalId = $("#hospital").val();
+                jsonBody.doctorId = $("#doctor").val().trim();
+                jsonBody.date = new Date($("#appointmentDate").val().trim()).getTime();
+                jsonBody.cost = $("#amount").val().trim();
+                jsonBody.identifiedSymptoms = getAllVisibleBadges();
+
+                if (!validationError && jsonBody) {
+                    // If validation passes, make a POST call to the endpoint.
+                    $.ajax({
+                        url: "/getfit/api/v1/appointments",
+                        type: "POST",
+                        headers: {
+                            "x-access-token": window.localStorage.CSRF
+                        },
+                        data: JSON.stringify(jsonBody),
+                        contentType: "application/json",
+                        success: function (response) {
+                            alert("Appointment taken successfully!");
+                            // Handle successful appointment submission here.
+                        },
+                        error: function (xhr, status, error) {
+                            alert("Error taking appointment. Please try again.");
+                            // Handle error if needed.
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

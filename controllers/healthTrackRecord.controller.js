@@ -19,7 +19,7 @@ exports.addRecord = async (req, res) => {
             weight: req.body.weight,
             bloodPressure: req.body.bloodPressure,
             sugerLevel: req.body.sugerLevel,
-            bodyTemparature: req.body.bodyTemparature,
+            bodyTemperature: req.body.bodyTemperature,
             identifiedSymptoms: req.body.identifiedSymptoms,
             userId: req.userId,
         }
@@ -68,7 +68,7 @@ exports.updateRecord = async (req, res) => {
         healthTrackRecord.weight = req.body.weight != undefined ? req.body.weight : healthTrackRecord.weight;
         healthTrackRecord.bloodPressure = req.body.bloodPressure != undefined ? req.body.bloodPressure : healthTrackRecord.bloodPressure;
         healthTrackRecord.sugerLevel = req.body.sugerLevel != undefined ? req.body.sugerLevel : healthTrackRecord.sugerLevel;
-        healthTrackRecord.bodyTemparature = req.body.bodyTemparature != undefined ? req.body.bodyTemparature : healthTrackRecord.bodyTemparature;
+        healthTrackRecord.bodyTemperature = req.body.bodyTemperature != undefined ? req.body.bodyTemperature : healthTrackRecord.bodyTemperature;
         healthTrackRecord.identifiedSymptoms = req.body.identifiedSymptoms != undefined ? req.body.identifiedSymptoms : healthTrackRecord.identifiedSymptoms;
     
         // save updated record into database

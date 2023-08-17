@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Take Appointment</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Add custom CSS styling here */
+        .form-container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
+        .form-container h2 {
+            text-align: center;
+        }
+        .badge {
+            margin-right: 5px;
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="form-container">
+            <h2>Take Appointment</h2>
+            <form id="appointmentForm">
+                <!-- ... (rest of the form) ... -->
+                <div class="mb-3">
+                    <label for="identifiedSymptoms" class="form-label">Identified Symptoms:</label>
+                    <input type="text" id="identifiedSymptomsInput" class="form-control" placeholder="Type and press Enter">
+                </div>
+                <div class="mb-3" id="selectedSymptomsContainer">
+                    <!-- Selected symptoms will be displayed here as badges -->
+                </div>
+                <div class="mb-3">
+                    <input type="submit" value="Submit" class="btn btn-primary">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Include Bootstrap JS (optional if you don't need any JavaScript features from Bootstrap) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            const selectedSymptoms = new Set();
+
+        function addSymptomBadge(symptom) {
+            const badge = `<span class="badge bg-primary">${symptom} <i class="fas fa-times-circle" data-symptom="${symptom}"></i></span>`;
+            $("#selectedSymptomsContainer").append(badge);
+        }
+
+        function removeSymptomBadge(symptom) {
+            $(`[data-symptom="${symptom}"]`).closest(".badge").remove();
+        }
+
+        $("#identifiedSymptomsInput").on("keypress", function (event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                const symptom = $(this).val().trim();
+                if (symptom !== "") {
+                    selectedSymptoms.add(symptom);
+                    addSymptomBadge(symptom);
+                    $(this).val("");
+                }
+            }
+        });
+
+        $("#selectedSymptomsContainer").on("click", ".fa-times-circle", function () {
+            const symptom = $(this).data("symptom");
+            selectedSymptoms.delete(symptom);
+            removeSymptomBadge(symptom);
+        });
+
+            // ... (rest of the code, including form submission handling) ...
+        });
+    </script>
+</body>
+</html>

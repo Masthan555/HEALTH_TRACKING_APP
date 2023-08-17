@@ -22,7 +22,7 @@ const healthTrackRecordSchema = new mongoose.Schema({
         type : String,
         required : true
     },
-    bodyTemparature : {
+    bodyTemperature : {
         type : String,
         required : true
     },
